@@ -1,16 +1,16 @@
 CREATE VIEW V_Teacher_Subject AS
 SELECT 
 
-    t.Id AS TeacherId,
-    t.FirstName,
-    t.LastName,
-    t.HireDate,
+    P.Id AS TeacherId,
+    P.FirstName,
+    P.LastName,
+    P.HireDate,
 
     s.Id AS SubjectId,
     s.Name AS SubjectName,
     s.Description AS SubjectDescription
 
-FROM Persons t
+FROM Persons P
 JOIN Subjects s ON t.SubjectId = s.Id;
 
 

@@ -16,7 +16,10 @@ namespace EF_Practice.Repositories
         public IReadOnlyRepository<Student>? studentReadOnlyRepository;
         public IRepository<Student>? studentRepository;
 
-
+        public UnitOfWork(ApplicationDbContext context)
+        {
+            _context = context;
+        }
         public IReadOnlyRepository<Student> StudentReadOnlyRepository
         {
             get

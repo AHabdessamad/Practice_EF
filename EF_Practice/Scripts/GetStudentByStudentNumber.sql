@@ -6,6 +6,6 @@ BEGIN
 
     SELECT 
         *
-    FROM Students
-    WHERE StudentNumber = @StudentNumber;
+    FROM Persons P
+    WHERE P.StudentNumber = @StudentNumber AND P.PersonType = 'Student';
 END
