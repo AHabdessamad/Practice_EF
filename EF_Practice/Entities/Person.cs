@@ -18,5 +18,6 @@ namespace EF_Practice.Models
         public Teacher? Teacher { get; set; }
 
     }
-  
+ 
+
 }

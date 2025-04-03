@@ -12,20 +12,6 @@ namespace EF_Practice.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Persons",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Persons", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Subjects",
                 columns: table => new
                 {
@@ -40,46 +26,35 @@ namespace EF_Practice.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Students",
+                name: "Persons",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    StudentNumber = table.Column<int>(type: "int", nullable: false),
-                    PersonId = table.Column<int>(type: "int", nullable: false)
+                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    StudentId = table.Column<int>(type: "int", nullable: true),
+                    TeacherId = table.Column<int>(type: "int", nullable: true),
+                    PersonType = table.Column<string>(type: "nvarchar(8)", maxLength: 8, nullable: false),
+                    StudentNumber = table.Column<int>(type: "int", nullable: true),
+                    HireDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    SubjectId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Students", x => x.Id);
+                    table.PrimaryKey("PK_Persons", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Students_Persons_PersonId",
-                        column: x => x.PersonId,
+                        name: "FK_Persons_Persons_StudentId",
+                        column: x => x.StudentId,
                         principalTable: "Persons",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Teachers",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    HireDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    PersonId = table.Column<int>(type: "int", nullable: false),
-                    SubjectId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Teachers", x => x.Id);
+                        principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Teachers_Persons_PersonId",
-                        column: x => x.PersonId,
+                        name: "FK_Persons_Persons_TeacherId",
+                        column: x => x.TeacherId,
                         principalTable: "Persons",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Teachers_Subjects_SubjectId",
+                        name: "FK_Persons_Subjects_SubjectId",
                         column: x => x.SubjectId,
                         principalTable: "Subjects",
                         principalColumn: "Id",
@@ -100,9 +75,9 @@ namespace EF_Practice.Migrations
                 {
                     table.PrimaryKey("PK_Classes", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Classes_Teachers_TeacherId",
+                        name: "FK_Classes_Persons_TeacherId",
                         column: x => x.TeacherId,
-                        principalTable: "Teachers",
+                        principalTable: "Persons",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -126,9 +101,9 @@ namespace EF_Practice.Migrations
                         principalTable: "Classes",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Enrollments_Students_StudentId",
+                        name: "FK_Enrollments_Persons_StudentId",
                         column: x => x.StudentId,
-                        principalTable: "Students",
+                        principalTable: "Persons",
                         principalColumn: "Id");
                 });
 
@@ -148,22 +123,21 @@ namespace EF_Practice.Migrations
                 column: "StudentId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Students_PersonId",
-                table: "Students",
-                column: "PersonId",
-                unique: true);
+                name: "IX_Persons_StudentId",
+                table: "Persons",
+                column: "StudentId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Teachers_PersonId",
-                table: "Teachers",
-                column: "PersonId",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Teachers_SubjectId",
-                table: "Teachers",
+                name: "IX_Persons_SubjectId",
+                table: "Persons",
                 column: "SubjectId",
-                unique: true);
+                unique: true,
+                filter: "[SubjectId] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Persons_TeacherId",
+                table: "Persons",
+                column: "TeacherId");
         }
 
         /// <inheritdoc />
@@ -174,12 +148,6 @@ namespace EF_Practice.Migrations
 
             migrationBuilder.DropTable(
                 name: "Classes");
-
-            migrationBuilder.DropTable(
-                name: "Students");
-
-            migrationBuilder.DropTable(
-                name: "Teachers");
 
             migrationBuilder.DropTable(
                 name: "Persons");

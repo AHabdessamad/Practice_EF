@@ -152,3 +152,4 @@ C:\Users\aaithamou\source\repos\EF_Practice\EF_Practice\bin\Debug\net9.0\Microso
 C:\Users\aaithamou\source\repos\EF_Practice\EF_Practice\bin\Debug\net9.0\Microsoft.Extensions.FileProviders.Abstractions.dll
 C:\Users\aaithamou\source\repos\EF_Practice\EF_Practice\bin\Debug\net9.0\Microsoft.Extensions.FileProviders.Physical.dll
 C:\Users\aaithamou\source\repos\EF_Practice\EF_Practice\bin\Debug\net9.0\Microsoft.Extensions.FileSystemGlobbing.dll
+C:\Users\aaithamou\source\repos\EF_Practice\EF_Practice\bin\Debug\net9.0\SimpleInjector.dll

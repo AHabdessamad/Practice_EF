@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EF_Practice.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250402140659_InitialCreate")]
+    [Migration("20250403005558_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -76,28 +76,6 @@ namespace EF_Practice.Migrations
                     b.ToTable("Enrollments");
                 });
 
-            modelBuilder.Entity("EF_Practice.Entities.Student", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("PersonId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("StudentNumber")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PersonId")
-                        .IsUnique();
-
-                    b.ToTable("Students");
-                });
-
             modelBuilder.Entity("EF_Practice.Entities.Subject", b =>
                 {
                     b.Property<int>("Id")
@@ -119,34 +97,6 @@ namespace EF_Practice.Migrations
                     b.ToTable("Subjects");
                 });
 
-            modelBuilder.Entity("EF_Practice.Entities.Teacher", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("HireDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("PersonId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SubjectId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PersonId")
-                        .IsUnique();
-
-                    b.HasIndex("SubjectId")
-                        .IsUnique();
-
-                    b.ToTable("Teachers");
-                });
-
             modelBuilder.Entity("EF_Practice.Models.Person", b =>
                 {
                     b.Property<int>("Id")
@@ -163,9 +113,55 @@ namespace EF_Practice.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("PersonType")
+                        .IsRequired()
+                        .HasMaxLength(8)
+                        .HasColumnType("nvarchar(8)");
+
+                    b.Property<int?>("StudentId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TeacherId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
+                    b.HasIndex("StudentId");
+
+                    b.HasIndex("TeacherId");
+
                     b.ToTable("Persons");
+
+                    b.HasDiscriminator<string>("PersonType").HasValue("Person");
+
+                    b.UseTphMappingStrategy();
+                });
+
+            modelBuilder.Entity("EF_Practice.Entities.Student", b =>
+                {
+                    b.HasBaseType("EF_Practice.Models.Person");
+
+                    b.Property<int>("StudentNumber")
+                        .HasColumnType("int");
+
+                    b.HasDiscriminator().HasValue("Student");
+                });
+
+            modelBuilder.Entity("EF_Practice.Entities.Teacher", b =>
+                {
+                    b.HasBaseType("EF_Practice.Models.Person");
+
+                    b.Property<DateTime>("HireDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("SubjectId")
+                        .HasColumnType("int");
+
+                    b.HasIndex("SubjectId")
+                        .IsUnique()
+                        .HasFilter("[SubjectId] IS NOT NULL");
+
+                    b.HasDiscriminator().HasValue("Teacher");
                 });
 
             modelBuilder.Entity("EF_Practice.Entities.Class", b =>
@@ -183,53 +179,46 @@ namespace EF_Practice.Migrations
                 {
                     b.HasOne("EF_Practice.Entities.Class", "Class")
                         .WithMany("Enrollments")
-                        .HasForeignKey("ClassId");
+                        .HasForeignKey("ClassId")
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("EF_Practice.Entities.Student", "Student")
                         .WithMany("Enrollments")
-                        .HasForeignKey("StudentId");
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("Class");
 
                     b.Navigation("Student");
                 });
 
-            modelBuilder.Entity("EF_Practice.Entities.Student", b =>
+            modelBuilder.Entity("EF_Practice.Models.Person", b =>
                 {
-                    b.HasOne("EF_Practice.Models.Person", "Person")
-                        .WithOne("Student")
-                        .HasForeignKey("EF_Practice.Entities.Student", "PersonId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.HasOne("EF_Practice.Entities.Student", "Student")
+                        .WithMany()
+                        .HasForeignKey("StudentId");
 
-                    b.Navigation("Person");
+                    b.HasOne("EF_Practice.Entities.Teacher", "Teacher")
+                        .WithMany()
+                        .HasForeignKey("TeacherId");
+
+                    b.Navigation("Student");
+
+                    b.Navigation("Teacher");
                 });
 
             modelBuilder.Entity("EF_Practice.Entities.Teacher", b =>
                 {
-                    b.HasOne("EF_Practice.Models.Person", "Person")
-                        .WithOne("Teacher")
-                        .HasForeignKey("EF_Practice.Entities.Teacher", "PersonId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("EF_Practice.Entities.Subject", "Subject")
                         .WithOne("Teacher")
                         .HasForeignKey("EF_Practice.Entities.Teacher", "SubjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Person");
-
                     b.Navigation("Subject");
                 });
 
             modelBuilder.Entity("EF_Practice.Entities.Class", b =>
-                {
-                    b.Navigation("Enrollments");
-                });
-
-            modelBuilder.Entity("EF_Practice.Entities.Student", b =>
                 {
                     b.Navigation("Enrollments");
                 });
@@ -240,11 +229,9 @@ namespace EF_Practice.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("EF_Practice.Models.Person", b =>
+            modelBuilder.Entity("EF_Practice.Entities.Student", b =>
                 {
-                    b.Navigation("Student");
-
-                    b.Navigation("Teacher");
+                    b.Navigation("Enrollments");
                 });
 #pragma warning restore 612, 618
         }

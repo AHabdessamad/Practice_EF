@@ -41,27 +41,22 @@ namespace EF_Practice.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Person>()
-               .HasOne(e => e.Student)
-               .WithOne(e => e.Person)
-               .HasForeignKey<Student>(e => e.PersonId)
-               .IsRequired();
-
-            modelBuilder.Entity<Person>()
-             .HasOne(e => e.Teacher)
-             .WithOne(e => e.Person)
-             .HasForeignKey<Teacher>(e => e.PersonId)
-             .IsRequired();
+                .HasDiscriminator<string>("PersonType")
+                .HasValue<Student>("Student")
+                .HasValue<Teacher>("Teacher");
 
             modelBuilder.Entity<Student>()
                 .HasMany(e => e.Enrollments)
                 .WithOne(e => e.Student)
                 .HasForeignKey(e => e.StudentId)
+                .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired(false);
 
             modelBuilder.Entity<Class>()
                .HasMany(e => e.Enrollments)
                .WithOne(e => e.Class)
                .HasForeignKey(e => e.ClassId)
+               .OnDelete(DeleteBehavior.NoAction)
                .IsRequired(false);
 
             modelBuilder.Entity<Teacher>()
